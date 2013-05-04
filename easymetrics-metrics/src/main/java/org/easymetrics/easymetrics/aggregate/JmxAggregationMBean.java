@@ -3,25 +3,12 @@ package org.easymetrics.easymetrics.aggregate;
 import java.util.List;
 
 public interface JmxAggregationMBean {
-	/**
-	 * @return
-	 */
-	public List<String> queryDistributionList();
 
-	/**
-	 * @param key
-	 * @return
-	 */
-	public String queryDistributeDetail(String key);
+	List<String> queryDistributionList();
 
-	/**
-	 * 
-	 */
-	public void resetAllCounts();
+	String queryDistributeDetail(String componentName, String functionName);
 
-	/**
-	 * @param key
-	 * @return
-	 */
-	public boolean resetCount(String key);
+	void resetAllCounts();
+
+	boolean resetCount(String componentName, String functionName);
 }

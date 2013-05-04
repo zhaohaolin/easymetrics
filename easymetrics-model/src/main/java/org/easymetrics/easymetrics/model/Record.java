@@ -8,79 +8,53 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-
 
 /**
  * @author Administrator
  * 
  */
-@XmlRootElement(name = "record")
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Record", propOrder = { "measurementList", "aggregationList", "usageList" })
 public class Record implements Serializable {
 
-	private static final long		serialVersionUID	= 1L;
+	private static final long	serialVersionUID	= 1L;
 
-	@XmlAttribute(name = "id", required = true)
-	private String							id;
+	private String				id;
 
-	@XmlAttribute(name = "domain", required = true)
-	private String							domain;
+	private String				domain;
 
-	@XmlAttribute(name = "host", required = true)
-	private String							host;
+	private String				host;
 
-	@XmlAttribute(name = "application", required = true)
-	private String							applicationName;
+	private String				serviceGroup;
 
-	@XmlAttribute(name = "framework", required = true)
-	private String							frameworkName;
+	private String				service;
 
-	@XmlAttribute(name = "version")
-	private String							version;
+	private String				version;
 
-	@XmlAttribute(name = "user")
-	private String							user;
+	private String				user;
 
-	@XmlAttribute(name = "pid")
-	private String							pid;
+	private String				pid;
 
-	@XmlAttribute(name = "ranges")
-	private String							aggregationRanges;
+	private String				aggregationRanges;
 
-	@XmlElement(name = "measurement")
-	private List<Measurement>		measurementList;
+	private List<Measurement>	measurementList;
 
-	@XmlElement(name = "aggregation")
-	private List<Aggregation>		aggregationList;
+	private List<Aggregation>	aggregationList;
 
-	@XmlElement(name = "usage")
 	private List<ResourceUsage>	usageList;
 
-	@XmlTransient
-	private Date								createdAt;
+	private Date				createdAt;
 
 	public Record() {
 
 	}
 
-	public Record(String id, String domain, String host, String applicationName, String frameworkName, String version, String user,
-			String pid) {
+	public Record(String id, String domain, String host, String serviceGroup, String service, String version, String user, String pid) {
 		this.id = id;
 		this.domain = domain;
 		this.host = host;
-		this.applicationName = applicationName;
-		this.frameworkName = frameworkName;
+		this.serviceGroup = serviceGroup;
+		this.service = service;
 		this.version = version;
 		this.user = user;
 		this.pid = pid;
@@ -110,20 +84,20 @@ public class Record implements Serializable {
 		this.host = host;
 	}
 
-	public String getApplicationName() {
-		return applicationName;
+	public String getServiceGroup() {
+		return serviceGroup;
 	}
 
-	public void setApplicationName(String applicationName) {
-		this.applicationName = applicationName;
+	public void setServiceGroup(String serviceGroup) {
+		this.serviceGroup = serviceGroup;
 	}
 
-	public String getFrameworkName() {
-		return frameworkName;
+	public String getService() {
+		return service;
 	}
 
-	public void setFrameworkName(String frameworkName) {
-		this.frameworkName = frameworkName;
+	public void setService(String service) {
+		this.service = service;
 	}
 
 	public String getVersion() {

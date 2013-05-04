@@ -13,10 +13,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.apache.commons.lang.StringUtils;
 import org.easymetrics.easymetrics.exception.MetricsException;
 import org.easymetrics.easymetrics.measure.DefaultMeasureWorker;
-import org.easymetrics.easymetrics.runtime.DefaultRuntimeWorker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * <p>
@@ -33,29 +31,19 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class DefaultMetricsEngine implements MetricsEngine {
-	private static final Logger											logger								= LoggerFactory
-																																						.getLogger(DefaultMetricsEngine.class);
+	private static final Logger						logger					= LoggerFactory.getLogger(DefaultMetricsEngine.class);
 
-	private static final String											KEY_JOIN							= "-";
+	private static final String						KEY_JOIN				= ":";
 
-	private AtomicBoolean														collectMetrics				= new AtomicBoolean(false);
-
-	private AtomicBoolean														throwException				= new AtomicBoolean(false);
-
-	private DefaultMeasureWorker										metricsMeasureWorker	= null;
-
-	@SuppressWarnings("unused")
-	private DefaultRuntimeWorker										metricsRuntimeWorker	= null;
-
-	private final ThreadLocal<Stack<MetricsTimer>>	localTimerStack				= new ThreadLocal<Stack<MetricsTimer>>();
-
-	// key is componentName-functionName
+	private AtomicBoolean							collectMetrics			= new AtomicBoolean(false);
+	private AtomicBoolean							throwException			= new AtomicBoolean(false);
+	private DefaultMeasureWorker					metricsMeasureWorker	= null;
+	private final ThreadLocal<Stack<MetricsTimer>>	localTimerStack			= new ThreadLocal<Stack<MetricsTimer>>();
+	// key is componentName:functionName
 	// key is componentName
-	private ConcurrentMap<String, Boolean>					filterMap							= new ConcurrentHashMap<String, Boolean>();
-
-	private boolean																	filterAll							= false;
-
-	private ReentrantLock														filterMapLock					= new ReentrantLock();
+	private ConcurrentMap<String, Boolean>			filterMap				= new ConcurrentHashMap<String, Boolean>();
+	private boolean									filterAll				= false;
+	private ReentrantLock							filterMapLock			= new ReentrantLock();
 
 	/**
 	 * {@inheritDoc}
@@ -227,10 +215,6 @@ public class DefaultMetricsEngine implements MetricsEngine {
 
 	public void setCollectMetrics(boolean collectMetrics) {
 		this.collectMetrics.set(collectMetrics);
-	}
-
-	public void setMetricsRuntimeWorker(DefaultRuntimeWorker metricsRuntimeWorker) {
-		this.metricsRuntimeWorker = metricsRuntimeWorker;
 	}
 
 }

@@ -42,12 +42,13 @@ public class DefaultPublishWorkerTestCase {
 
 		publishWorker.setPublishSize(3);
 
-		publishWorker.setApplicationName("app");
+		publishWorker.setServiceGroup("app");
 		publishWorker.setDomain("domain");
-		publishWorker.setFrameworkName("framework");
+		publishWorker.setService("framework");
 		publishWorker.setHost("host");
 		publishWorker.setPid("pid");
 		publishWorker.setUser("user");
+		publishWorker.setVersion("version");
 
 		final Measurement mea = createMeasurement();
 		final Aggregation agg = createAggregation();
@@ -58,9 +59,9 @@ public class DefaultPublishWorkerTestCase {
 
 			@Override
 			public boolean publish(Record record) {
-				Assert.assertEquals("app", record.getApplicationName());
+				Assert.assertEquals("app", record.getServiceGroup());
 				Assert.assertEquals("domain", record.getDomain());
-				Assert.assertEquals("framework", record.getFrameworkName());
+				Assert.assertEquals("framework", record.getService());
 				Assert.assertEquals("host", record.getHost());
 				Assert.assertEquals("pid", record.getPid());
 				Assert.assertEquals("user", record.getUser());
@@ -76,9 +77,9 @@ public class DefaultPublishWorkerTestCase {
 
 			@Override
 			public boolean publish(Record record) {
-				Assert.assertEquals("app", record.getApplicationName());
+				Assert.assertEquals("app", record.getServiceGroup());
 				Assert.assertEquals("domain", record.getDomain());
-				Assert.assertEquals("framework", record.getFrameworkName());
+				Assert.assertEquals("framework", record.getService());
 				Assert.assertEquals("host", record.getHost());
 				Assert.assertEquals("pid", record.getPid());
 				Assert.assertEquals("user", record.getUser());

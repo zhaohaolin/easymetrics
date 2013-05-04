@@ -8,13 +8,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
@@ -22,59 +15,39 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * @author Administrator
  * 
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ResourceUsage", propOrder = { "threadList", "heapList", "collectorList" })
 public class ResourceUsage implements Publishable, Serializable {
 
-	private static final long			serialVersionUID	= 1L;
+	private static final long		serialVersionUID	= 1L;
 
-	@XmlTransient
-	private String								recordId;
+	private transient String		recordId;
 
-	@XmlAttribute(name = "usageId", required = true)
-	private String								usageId;
+	private String					usageId;
 
-	/**
-	 * cpuCount
-	 */
-	@XmlAttribute(name = "processors", required = true)
-	private int										processorCount;
+	private int						processorCount;
 
-	@XmlAttribute(name = "threads", required = true)
-	private int										threadCount;
+	private int						threadCount;
 
-	@XmlAttribute(name = "checkTime", required = true)
-	private Date									checkTime;
+	private Date					checkTime;
 
-	@XmlAttribute(name = "upTime", required = true)
-	private long									upTime;
+	private long					upTime;
 
-	@XmlAttribute(name = "cpuTime", required = true)
-	private long									cpuTime;
+	private long					cpuTime;
 
-	@XmlAttribute(name = "userTime", required = true)
-	private long									userTime;
+	private long					userTime;
 
-	@XmlAttribute(name = "heapMax", required = true)
-	private long									heapMax;
+	private long					heapMax;
 
-	@XmlAttribute(name = "heapUsed", required = true)
-	private long									heapUsed;
+	private long					heapUsed;
 
-	@XmlAttribute(name = "nonHeapMax", required = true)
-	private long									nonHeapMax;
+	private long					nonHeapMax;
 
-	@XmlAttribute(name = "nonHeapUsed", required = true)
-	private long									nonHeapUsed;
+	private long					nonHeapUsed;
 
-	@XmlElement(name = "thread")
-	private List<ThreadUsage>			threadList				= new ArrayList<ThreadUsage>();
+	private List<ThreadUsage>		threadList			= new ArrayList<ThreadUsage>();
 
-	@XmlElement(name = "heap")
-	private List<HeapUsage>				heapList					= new ArrayList<HeapUsage>();
+	private List<HeapUsage>			heapList			= new ArrayList<HeapUsage>();
 
-	@XmlElement(name = "collector")
-	private List<CollectorUsage>	collectorList			= new ArrayList<CollectorUsage>();
+	private List<CollectorUsage>	collectorList		= new ArrayList<CollectorUsage>();
 
 	@Override
 	public String getRecordId() {

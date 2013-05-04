@@ -13,9 +13,9 @@ import org.easymetrics.easymetrics.engine.MockMetricsEngine;
  */
 public class MetricsCollectorFactory {
 
-	private static final MetricsCollectorFactory	instance			= new MetricsCollectorFactory();
+	private static final MetricsCollectorFactory	instance		= new MetricsCollectorFactory();
 
-	private MetricsEngine													metricsEngine	= new MockMetricsEngine();
+	private MetricsEngine							metricsEngine	= new MockMetricsEngine();
 
 	public static MetricsCollectorFactory getInstance() {
 		return instance;

@@ -13,13 +13,12 @@ import org.easymetrics.easymetrics.engine.MetricsTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class MetricsObjectInterceptor implements MethodInterceptor {
-	private static final Logger	LOGGER			= LoggerFactory.getLogger(MetricsObjectInterceptor.class);
+	private static final Logger	LOGGER		= LoggerFactory.getLogger(MetricsObjectInterceptor.class);
 
-	private Object							target			= null;
-	private Set<String>					skipMethods	= new HashSet<String>();
-	private boolean							initial			= true;
+	private Object				target		= null;
+	private Set<String>			skipMethods	= new HashSet<String>();
+	private boolean				initial		= true;
 
 	public MetricsObjectInterceptor(Object target) {
 		this.target = target;
@@ -93,8 +92,7 @@ public class MetricsObjectInterceptor implements MethodInterceptor {
 			itr = itr.getSuperclass();
 		}
 
-		throw new UnsupportedOperationException("Failed to find method " + targetMethod.getName() + " from class "
-				+ target.getClass());
+		throw new UnsupportedOperationException("Failed to find method " + targetMethod.getName() + " from class " + target.getClass());
 	}
 
 	public boolean isInitial() {

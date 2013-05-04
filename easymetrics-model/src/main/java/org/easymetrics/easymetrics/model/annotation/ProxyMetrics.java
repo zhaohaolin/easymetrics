@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.easymetrics.easymetrics;
+package org.easymetrics.easymetrics.model.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -3,7 +3,7 @@
  */
 package org.easymetrics.easymetrics.cglib;
 
-import org.easymetrics.easymetrics.ProxyMetrics;
+import org.easymetrics.easymetrics.model.annotation.ProxyMetrics;
 
 /**
  * @author Administrator

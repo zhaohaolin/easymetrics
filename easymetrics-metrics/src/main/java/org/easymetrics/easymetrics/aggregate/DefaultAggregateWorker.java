@@ -9,6 +9,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.management.MBeanServer;
@@ -21,33 +23,32 @@ import org.easymetrics.easymetrics.publish.MetricsPublishWorker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * @author Administrator
  * 
  */
 public class DefaultAggregateWorker extends Thread implements MetricsAggregateWorker {
 
-	private static final Logger											logger										= LoggerFactory
-																																								.getLogger(DefaultAggregateWorker.class);
+	private static final Logger					LOGGER						= LoggerFactory.getLogger(DefaultAggregateWorker.class);
 
-	static final String															DELIMITER_AGGREGATION_KEY	= ":";
+	static final String							DELIMITER_AGGREGATION_KEY	= ":";
 
-	private long																		aggregationInterval				= 1800000;
-	private boolean																	aggregationFilter					= true;
-	private int																			keepTopCount							= 2;
-	private Date																		startTime									= new Date();
-	private final HashMap<String, AggregationEntry>	aggregationMap						= new HashMap<String, AggregationEntry>();
-	private final ReentrantLock											aggregationMapLock				= new ReentrantLock();
-	private JmxAggregation													aggregationMBean					= null;
-	private String																	mbeanObjectName						= "Application:type=Metrics,name=Aggregation";
-	private MetricsPublishWorker										metricsPublishWorker			= null;
-	private Long[]																	aggregationRanges					= new Long[] { 0L, 2L, 5L, 10L, 20L, 50L,
-			100L, 200L, 500L, 1000L, 2000L, 5000L, 10000L, 20000L, 50000L				};
-	private String																	ranges										= "";
+	private long								aggregationInterval			= 1800000;
+	private boolean								aggregationFilter			= true;
+	private int									keepTopCount				= 2;
+	private Date								startTime					= new Date();
+	private final Map<String, AggregationEntry>	aggregationMap				= new HashMap<String, AggregationEntry>();
+	private final ReentrantLock					aggregationMapLock			= new ReentrantLock();
+	private JmxAggregation						aggregationMBean			= null;
+	private String								mbeanObjectName				= "org.easymetrics:type=Metrics,name=Aggregation";
+	private MetricsPublishWorker				metricsPublishWorker		= null;
+	private Long[]								aggregationRanges			= new Long[] { 0L, 2L, 5L, 10L, 20L, 50L, 100L, 200L, 500L, 1000L, 2000L, 5000L,
+			10000L, 20000L, 50000L											};
+	private String								ranges						= "";
+	private Bucket[]							emptyBucket					= new Bucket[0];
+	private AggregationEntry[]					emptyEntry					= new AggregationEntry[0];
 
-	private Bucket[]																emptyBucket								= new Bucket[0];
-	private AggregationEntry[]											emptyEntry								= new AggregationEntry[0];
+	private AtomicBoolean						terminating					= new AtomicBoolean(false);
 
 	@Override
 	public void run() {
@@ -56,7 +57,7 @@ public class DefaultAggregateWorker extends Thread implements MetricsAggregateWo
 		for (Long value : aggregationRanges) {
 			if (value <= prior) {
 				String error = "Invalid range value " + value + " <= " + prior;
-				logger.error(error);
+				LOGGER.error(error);
 				throw new RuntimeException(error);
 			}
 			if (rangesBuilder.length() == 0) {
@@ -69,21 +70,25 @@ public class DefaultAggregateWorker extends Thread implements MetricsAggregateWo
 
 		registerMBeans();
 
-		while (true) {
+		while (!getTerminating()) {
 
 			try {
 				Thread.sleep(aggregationInterval);
 			} catch (InterruptedException e) {
-				logger.warn("Aggregation operation thread is interrupted with error " + e.getMessage(), e);
+				LOGGER.warn("Aggregation operation thread is interrupted with error " + e.getMessage(), e);
 			}
 
 			try {
 				flushAggregationMap();
 			} catch (Exception e) {
-				logger.warn("Failed to flush aggregation data with error " + e.getMessage(), e);
+				LOGGER.warn("Failed to flush aggregation data with error " + e.getMessage(), e);
 			}
 		}
 
+	}
+
+	public void destroy() {
+		setTerminating();
 	}
 
 	private void registerMBeans() {
@@ -96,12 +101,12 @@ public class DefaultAggregateWorker extends Thread implements MetricsAggregateWo
 			aggregationMBean = new JmxAggregation();
 			mbeanServer.registerMBean(aggregationMBean, aggregationName);
 
-			if (logger.isInfoEnabled()) {
-				logger.info("Registering with JMX server as MBean [" + aggregationName + "]");
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info("Registering with JMX server as MBean [" + aggregationName + "]");
 			}
 		} catch (Exception e) {
 			String message = "Unable to register MBeans with error " + e.getMessage();
-			logger.error(message, e);
+			LOGGER.error(message, e);
 		}
 	}
 
@@ -165,13 +170,13 @@ public class DefaultAggregateWorker extends Thread implements MetricsAggregateWo
 		if (metricsPublishWorker != null) {
 			if (!aggregationList.isEmpty()) {
 				metricsPublishWorker.enqueuePublishable(aggregationList);
-				if (logger.isDebugEnabled()) {
-					logger.debug(aggregationList.size() + " aggregations were added to publish queue");
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug(aggregationList.size() + " aggregations were added to publish queue");
 				}
 			}
 		} else {
-			if (logger.isDebugEnabled()) {
-				logger.debug(aggregationList.size() + " aggregations dropped from publishing");
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(aggregationList.size() + " aggregations dropped from publishing");
 			}
 		}
 	}
@@ -179,16 +184,14 @@ public class DefaultAggregateWorker extends Thread implements MetricsAggregateWo
 	private boolean check(final Measurement measurement) {
 		boolean valuable = false;
 
-		String key = StringUtils.join(new Object[] { measurement.getComponentName(), measurement.getFunctionName() },
-				DELIMITER_AGGREGATION_KEY);
+		String key = StringUtils.join(new Object[] { measurement.getComponentName(), measurement.getFunctionName() }, DELIMITER_AGGREGATION_KEY);
 
 		aggregationMapLock.lock();
 
 		try {
 			AggregationEntry aggregation = aggregationMap.get(key);
 			if (aggregation == null) {
-				aggregation = new AggregationEntry(measurement.getComponentName(), measurement.getFunctionName(),
-						aggregationRanges, keepTopCount);
+				aggregation = new AggregationEntry(measurement.getComponentName(), measurement.getFunctionName(), aggregationRanges, keepTopCount);
 				aggregationMap.put(key, aggregation);
 			}
 			valuable = aggregation.addMeasurement(measurement.getDuration(), measurement.getWorkUnits());
@@ -199,8 +202,16 @@ public class DefaultAggregateWorker extends Thread implements MetricsAggregateWo
 		return valuable;
 	}
 
-	public void setAggregationRanges(Long[] aggregationRanges) {
-		this.aggregationRanges = aggregationRanges;
+	public void setTerminating() {
+		this.terminating.set(true);
+	}
+
+	protected boolean getTerminating() {
+		return terminating.get();
+	}
+
+	public void setAggregationRanges(String aggregationRanges) {
+		this.ranges = aggregationRanges;
 	}
 
 	public void setAggregationInterval(long aggregationInterval) {
@@ -223,7 +234,7 @@ public class DefaultAggregateWorker extends Thread implements MetricsAggregateWo
 		this.keepTopCount = keepTopCount;
 	}
 
-	HashMap<String, AggregationEntry> getAggregationMap() {
+	Map<String, AggregationEntry> getAggregationMap() {
 		return aggregationMap;
 	}
 

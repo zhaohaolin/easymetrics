@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import javax.annotation.Resource;
-
 import junit.framework.Assert;
 
 import org.easymetrics.easymetrics.model.Aggregation;
@@ -22,19 +20,21 @@ import org.easymetrics.easymetrics.publish.dao.DefaultMetricsDao;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 
-@ContextConfiguration(locations = { "/spring/applicationContext.xml" })
-public class DefaultMetricsDaoTestCase extends AbstractJUnit4SpringContextTests {
+public class DefaultMetricsDaoTestCase {
 
-	@Resource
-	private DefaultMetricsDao	metricsDao	= null;
+	private DefaultMetricsDao	metricsDao	= new DefaultMetricsDao();
 
 	@Before
 	public void setUp() throws Exception {
-
+		ComboPooledDataSource dataSource = new ComboPooledDataSource();
+		dataSource.setDriverClass("com.mysql.jdbc.Driver");
+		dataSource.setJdbcUrl("jdbc:mysql://127.0.0.1:3306/metrics?characterEncoding=utf-8");
+		dataSource.setUser("metrics");
+		dataSource.setPassword("metrics");
+		metricsDao.setDataSource(dataSource);
 	}
 
 	@After
@@ -53,8 +53,7 @@ public class DefaultMetricsDaoTestCase extends AbstractJUnit4SpringContextTests 
 		Record record = createRecord();
 		metricsDao.saveRecord(record);
 		Measurement measurement = createMeasurement(record.getId());
-		Assert.assertEquals(1,
-				metricsDao.saveMeasurements(record.getId(), Arrays.asList(new Measurement[] { measurement })));
+		Assert.assertEquals(1, metricsDao.saveMeasurements(record.getId(), Arrays.asList(new Measurement[] { measurement })));
 	}
 
 	@Test
@@ -62,8 +61,7 @@ public class DefaultMetricsDaoTestCase extends AbstractJUnit4SpringContextTests 
 		Record record = createRecord();
 		metricsDao.saveRecord(record);
 		Aggregation aggregation = createAggregation(record.getId());
-		Assert.assertEquals(1,
-				metricsDao.saveAggregations(record.getId(), Arrays.asList(new Aggregation[] { aggregation })));
+		Assert.assertEquals(1, metricsDao.saveAggregations(record.getId(), Arrays.asList(new Aggregation[] { aggregation })));
 	}
 
 	@Test
@@ -181,9 +179,9 @@ public class DefaultMetricsDaoTestCase extends AbstractJUnit4SpringContextTests 
 	private Record createRecord() {
 		Record record = new Record();
 		record.setId(UUID.randomUUID().toString());
-		record.setApplicationName("app");
+		record.setServiceGroup("app");
 		record.setDomain("domain");
-		record.setFrameworkName("framework");
+		record.setService("framework");
 		record.setHost("host");
 		record.setPid("pid");
 		record.setUser("user");

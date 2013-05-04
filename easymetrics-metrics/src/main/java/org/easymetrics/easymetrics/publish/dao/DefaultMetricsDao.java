@@ -28,7 +28,7 @@ import org.springframework.jdbc.core.support.AbstractInterruptibleBatchPreparedS
  */
 public class DefaultMetricsDao {
 
-	private static final String INSERT_METRICS_RECORD = "INSERT INTO METRICS_RECORD (RECORD_ID, APPLICATION_NAME, DOMAIN, HOST_NAME, FRAMEWORK_NAME, APPLICATION_VERSION, HOST_USER, INSTANCE_PID, AGGREGATION_RANGES, CREATED_FROM, CREATED_AT, UPDATED_FROM, UPDATED_AT) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, 'SYSTEM', NOW(), 'SYSTEM', NOW())";
+	private static final String INSERT_METRICS_RECORD = "INSERT INTO METRICS_RECORD (RECORD_ID, SERVICE_GROUP, DOMAIN, HOST_NAME, SERVICE, APPLICATION_VERSION, HOST_USER, INSTANCE_PID, AGGREGATION_RANGES, CREATED_FROM, CREATED_AT, UPDATED_FROM, UPDATED_AT) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, 'SYSTEM', NOW(), 'SYSTEM', NOW())";
 
 	private static final String INSERT_MEASUREMENT = "INSERT INTO METRICS_MEASUREMENT (RECORD_ID, MEASUREMENT_ID,PARENT_ID,CORRELATION_ID,REQUESTER_ID,COMPONENT_NAME,FUNCTION_NAME,THREAD_NAME,REQUEST_USER,TIME,DURATION,WORK_UNITS,CREATE_ORDER, FAIL_STATUS, CREATED_FROM, CREATED_AT, UPDATED_FROM, UPDATED_AT)  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'SYSTEM', NOW(), 'SYSTEM', NOW())";
 
@@ -47,7 +47,6 @@ public class DefaultMetricsDao {
 	private static final String INSERT_USAGE_COLLECTOR = "INSERT INTO METRICS_USAGE_GC (USAGE_ID, NAME, GC_COUNT, GC_TIME, CREATED_FROM, CREATED_AT, UPDATED_FROM, UPDATED_AT) VALUES (?, ?, ?, ?, 'SYSTEM', NOW(), 'SYSTEM', NOW())";
 
 	private JdbcTemplate jdbcTemplate;
-	private int batchSize = 500;
 
 	public int saveRecord(final Record record) {
 		int count = jdbcTemplate.update(INSERT_METRICS_RECORD,
@@ -56,10 +55,10 @@ public class DefaultMetricsDao {
 					public void setValues(PreparedStatement ps)
 							throws SQLException {
 						ps.setString(1, record.getId());
-						ps.setString(2, record.getApplicationName());
+						ps.setString(2, record.getServiceGroup());
 						ps.setString(3, record.getDomain());
 						ps.setString(4, record.getHost());
-						ps.setString(5, record.getFrameworkName());
+						ps.setString(5, record.getService());
 						ps.setString(6, record.getVersion());
 						ps.setString(7, record.getUser());
 						ps.setString(8, record.getPid());
@@ -482,10 +481,6 @@ public class DefaultMetricsDao {
 
 	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
-	}
-
-	public void setBatchSize(int batchSize) {
-		this.batchSize = batchSize;
 	}
 
 	public void setDataSource(DataSource dataSource) {

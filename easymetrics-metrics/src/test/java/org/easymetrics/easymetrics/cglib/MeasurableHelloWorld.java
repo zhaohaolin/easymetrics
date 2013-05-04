@@ -3,7 +3,7 @@
  */
 package org.easymetrics.easymetrics.cglib;
 
-import org.easymetrics.easymetrics.Measurable;
+import org.easymetrics.easymetrics.model.Measurable;
 
 /**
  * @author Administrator

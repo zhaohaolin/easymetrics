@@ -11,13 +11,12 @@ import org.easymetrics.easymetrics.engine.MetricsTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * @author Administrator
  * 
  */
 public class MetricsProxyHandler {
-	private static final Logger											logger				= LoggerFactory.getLogger(MetricsProxyHandler.class);
+	private static final Logger						LOGGER			= LoggerFactory.getLogger(MetricsProxyHandler.class);
 
 	/**
 	 * For holding the metrics collector for the component.
@@ -45,8 +44,8 @@ public class MetricsProxyHandler {
 	 * @return
 	 */
 	public MetricsTimer startMetricsTimer(String component, String function, boolean startNew, Object... arguments) {
-		if (logger.isTraceEnabled()) {
-			logger.trace("Start metrics on component " + component + " function " + function);
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Start metrics on component " + component + " function " + function);
 		}
 
 		MetricsCollector metricsCollector = collectorMap.get(component);
@@ -83,8 +82,8 @@ public class MetricsProxyHandler {
 	 * @param exception
 	 */
 	public void stopMetricsTimer(MetricsTimer metricsTimer, Object argument, Throwable exception) {
-		if (logger.isTraceEnabled()) {
-			logger.trace("Stop metrics timer " + metricsTimer + " exception " + exception);
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Stop metrics timer " + metricsTimer + " exception " + exception);
 		}
 
 		if (argument != null) {

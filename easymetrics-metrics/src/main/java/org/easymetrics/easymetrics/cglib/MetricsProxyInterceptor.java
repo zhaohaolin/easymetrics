@@ -6,6 +6,7 @@ package org.easymetrics.easymetrics.cglib;
 import java.util.HashSet;
 import java.util.Set;
 
+
 import net.sf.cglib.proxy.Enhancer;
 
 /**
@@ -20,7 +21,6 @@ public class MetricsProxyInterceptor implements ProxyInterceptor {
 		Enhancer enhancer = new Enhancer();
 		enhancer.setSuperclass(clazz);
 		enhancer.setInterfaces(getInterfaces(clazz).toArray(new Class<?>[0]));
-
 		enhancer.setCallback(new MetricsMethodInterceptor());
 		return (T) enhancer.create();
 	}

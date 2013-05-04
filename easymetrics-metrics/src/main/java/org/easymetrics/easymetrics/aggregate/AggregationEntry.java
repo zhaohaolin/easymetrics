@@ -12,7 +12,6 @@ import org.easymetrics.easymetrics.util.MetricsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * metrics aggregation per call.
  * 
@@ -21,13 +20,13 @@ import org.slf4j.LoggerFactory;
  */
 public class AggregationEntry extends Aggregation {
 
-	private static final long				serialVersionUID	= 1L;
+	private static final long		serialVersionUID	= 1L;
 
-	private static final Logger			logger						= LoggerFactory.getLogger(AggregationEntry.class);
+	private static final Logger		LOGGER				= LoggerFactory.getLogger(AggregationEntry.class);
 
-	private double									total;
+	private double					total;
 
-	private double									unitTotal;
+	private double					unitTotal;
 
 	private final TopDurationArray	topTotalDurations;
 
@@ -146,21 +145,19 @@ public class AggregationEntry extends Aggregation {
 		// update average and count
 		long allCount = aggregation.getCount() + this.getCount();
 		if (allCount > 0) {
-			this.setAverage(aggregation.getAverage() * (aggregation.getCount() / (double) allCount) + this.getAverage()
-					* (this.getCount() / (double) allCount));
+			this.setAverage(aggregation.getAverage() * (aggregation.getCount() / (double) allCount) + this.getAverage() * (this.getCount() / (double) allCount));
 		}
 		this.setCount(this.getCount() + aggregation.getCount());
 		this.total += aggregation.total;
 		if (allCount > 0) {
-			this.setUnitAverage(aggregation.getUnitAverage() * (aggregation.getCount() / (double) allCount)
-					+ this.getUnitAverage() * (this.getCount() / (double) allCount));
+			this.setUnitAverage(aggregation.getUnitAverage() * (aggregation.getCount() / (double) allCount) + this.getUnitAverage()
+					* (this.getCount() / (double) allCount));
 		}
 		this.unitTotal += aggregation.unitTotal;
 
 		// update buckets
 		if (this.getBucketList().size() != aggregation.getBucketList().size()) {
-			logger.warn("Aggregation ranges changed from " + this.getBucketList().size() + " to "
-					+ aggregation.getBucketList().size());
+			LOGGER.warn("Aggregation ranges changed from " + this.getBucketList().size() + " to " + aggregation.getBucketList().size());
 		} else {
 			Iterator<Bucket> iterator = aggregation.getBucketList().iterator();
 			for (Bucket bucket : this.getBucketList()) {
@@ -173,8 +170,7 @@ public class AggregationEntry extends Aggregation {
 		// update time
 		long duration;
 		if (aggregation.getStartTime().before(this.getStartTime())) {
-			duration = this.getDuration()
-					+ MetricsUtil.millisToSeconds(this.getStartTime().getTime() - aggregation.getStartTime().getTime());
+			duration = this.getDuration() + MetricsUtil.millisToSeconds(this.getStartTime().getTime() - aggregation.getStartTime().getTime());
 			this.setStartTime(aggregation.getStartTime());
 			if (duration > aggregation.getDuration()) {
 				this.setDuration(duration);
@@ -183,8 +179,7 @@ public class AggregationEntry extends Aggregation {
 			}
 
 		} else {
-			duration = aggregation.getDuration()
-					+ MetricsUtil.millisToSeconds(aggregation.getStartTime().getTime() - this.getStartTime().getTime());
+			duration = aggregation.getDuration() + MetricsUtil.millisToSeconds(aggregation.getStartTime().getTime() - this.getStartTime().getTime());
 			if (duration > this.getDuration()) {
 				this.setDuration(duration);
 			}
@@ -199,7 +194,7 @@ public class AggregationEntry extends Aggregation {
 	 * 
 	 */
 	class TopDurationArray {
-		private int						count	= 0;
+		private int				count	= 0;
 		private final long[]	dataArray;
 
 		public TopDurationArray(int size) {

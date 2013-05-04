@@ -17,17 +17,17 @@ public class MetricsQueryDao {
 
 	private static final String LOAD_METRICS_BUCKET_BY_AGGRE = "SELECT START_RANGE, COUNT, UNIT_COUNT FROM METRICS_AGGREGATION_BUCKET WHERE AGGREGATION_ID = ? ORDER BY START_RANGE";
 
-	private static final String LOAD_DISTINCT_HOST = "SELECT DISTINCT null,APPLICATION_NAME,DOMAIN,HOST_NAME,FRAMEWORK_NAME,APPLICATION_VERSION,HOST_USER,INSTANCE_PID, null FROM METRICS_RECORD";
+	private static final String LOAD_DISTINCT_HOST = "SELECT DISTINCT null,SERVICE_GROUP,DOMAIN,HOST_NAME,SERVICE,APPLICATION_VERSION,HOST_USER,INSTANCE_PID, null FROM METRICS_RECORD";
 
 	private static final String LOAD_AGGREGATIONS_BY_HOST = "SELECT AGG.AGGREGATION_ID, AGG.COMPONENT_NAME, AGG.FUNCTION_NAME, "
 			+ "AGG.START_TIME, AGG.DURATION, AGG.MAXIMUM, AGG.MINIMUM, AGG.AVERAGE, "
 			+ "AGG.UNIT_MAXIMUM, AGG.UNIT_MINIMUM, AGG.UNIT_AVERAGE, AGG.COUNT, REC.AGGREGATION_RANGES"
 			+ "FROM METRICS_AGGREGATION AGG"
 			+ "LEFT JOIN METRICS_RECORD REC ON REC.RECORD_ID = AGG.RECORD_ID"
-			+ "WHERE REC.APPLICATION_NAME = ?"
+			+ "WHERE REC.SERVICE_GROUP = ?"
 			+ "AND REC.DOMAIN = ?"
 			+ "AND REC.HOST_NAME = ?"
-			+ "AND REC.FRAMEWORK_NAME = ?"
+			+ "AND REC.SERVICE = ?"
 			+ "AND REC.APPLICATION_VERSION = ?"
 			+ "AND REC.HOST_USER = ?"
 			+ "AND REC.INSTANCE_PID = ?"
@@ -52,9 +52,9 @@ public class MetricsQueryDao {
 			Date startDate, Date endDate) {
 		List<Aggregation> result = jdbcTemplate.queryForList(
 				LOAD_AGGREGATIONS_BY_HOST,
-				new Object[] { hostInfo.getApplicationName(),
+				new Object[] { hostInfo.getServiceGroup(),
 						hostInfo.getDomain(), hostInfo.getHost(),
-						hostInfo.getFrameworkName(), hostInfo.getVersion(),
+						hostInfo.getService(), hostInfo.getVersion(),
 						hostInfo.getUser(), hostInfo.getPid(), startDate,
 						endDate }, Aggregation.class);
 		return result == null ? new ArrayList<Aggregation>() : result;

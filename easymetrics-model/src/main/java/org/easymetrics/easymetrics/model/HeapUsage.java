@@ -5,37 +5,24 @@ package org.easymetrics.easymetrics.model;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-
 
 /**
  * @author Administrator
  * 
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "HeapUsage")
-public class HeapUsage  implements Serializable{
+public class HeapUsage implements Serializable {
 
 	private static final long	serialVersionUID	= 1L;
-	
-	@XmlTransient
-	private String	usageId;
 
-	@XmlAttribute(name = "name", required = true)
-	private String	name;
+	private transient String	usageId;
 
-	@XmlAttribute(name = "max", required = true)
-	private long		max;
+	private String				name;
 
-	@XmlAttribute(name = "used", required = true)
-	private long		used;
+	private long				max;
+
+	private long				used;
 
 	public HeapUsage() {
 

@@ -2,35 +2,22 @@ package org.easymetrics.easymetrics.model;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ThreadUsage")
 public class ThreadUsage implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long	serialVersionUID	= 1L;
 
-	@XmlTransient
-	private String usageId;
+	private transient String	usageId;
 
-	@XmlAttribute(name = "name", required = true)
-	private String name;
+	private String				name;
 
-	@XmlAttribute(name = "state", required = true)
-	private String state;
+	private String				state;
 
-	@XmlAttribute(name = "cpu", required = true)
-	private long cpuTime;
+	private long				cpuTime;
 
-	@XmlAttribute(name = "user", required = true)
-	private long userTime;
+	private long				userTime;
 
 	public ThreadUsage() {
 
@@ -85,8 +72,7 @@ public class ThreadUsage implements Serializable {
 
 	@Override
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this,
-				ToStringStyle.SHORT_PREFIX_STYLE);
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 
 }

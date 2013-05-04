@@ -8,13 +8,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
@@ -22,56 +15,39 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * @author Administrator
  * 
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Aggregation", propOrder = { "bucketList" })
 public class Aggregation implements Publishable, Serializable {
 
 	private static final long	serialVersionUID	= 1L;
 
-	@XmlAttribute(name = "id", required = true)
-	private String						id;
+	private String				id;
 
-	@XmlTransient
-	private String						recordId;
+	private String				componentName;
 
-	@XmlAttribute(name = "component", required = true)
-	private String						componentName;
+	private String				functionName;
 
-	@XmlAttribute(name = "function", required = true)
-	private String						functionName;
+	private Date				startTime;
 
-	@XmlAttribute(name = "start", required = true)
-	private Date							startTime;
+	private long				duration;
 
-	@XmlAttribute(name = "duration", required = true)
-	private long							duration;
+	private long				maximum;
 
-	@XmlAttribute(name = "max", required = true)
-	private long							maximum;
+	private long				minimum;
 
-	@XmlAttribute(name = "min", required = true)
-	private long							minimum;
+	private double				average;
 
-	@XmlAttribute(name = "avg", required = true)
-	private double						average;
+	private long				unitMaximum;
 
-	@XmlAttribute(name = "unit_max", required = true)
-	private long							unitMaximum;
+	private long				unitMinimum;
 
-	@XmlAttribute(name = "unit_min", required = true)
-	private long							unitMinimum;
+	private double				unitAverage;
 
-	@XmlAttribute(name = "unit_avg", required = true)
-	private double						unitAverage;
+	private long				count;
 
-	@XmlAttribute(name = "count", required = true)
-	private long							count;
+	private List<Bucket>		bucketList			= new ArrayList<Bucket>();
 
-	@XmlElement(name = "bucket")
-	private List<Bucket>			bucketList				= new ArrayList<Bucket>();
+	private transient String	recordId;
 
-	@XmlTransient
-	private String						ranges;
+	private transient String	ranges;
 
 	public Aggregation() {
 
@@ -82,21 +58,11 @@ public class Aggregation implements Publishable, Serializable {
 		this.functionName = functionName;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see edu.hziee.common.metrics.model.Publishable#getRecordId()
-	 */
 	@Override
 	public String getRecordId() {
 		return recordId;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see edu.hziee.common.metrics.model.Publishable#setRecordId(java.lang.String)
-	 */
 	@Override
 	public void setRecordId(String recordId) {
 		this.recordId = recordId;

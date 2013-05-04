@@ -3,19 +3,10 @@ package org.easymetrics.easymetrics.measure;
 import java.util.List;
 
 public interface JmxMeasurementMBean {
-	/**
-	 * @return
-	 */
-	public List<String> queryMeasurementList();
 
-	/**
-	 * 
-	 */
-	public void resetAllCounts();
+	List<String> queryMeasurementList();
 
-	/**
-	 * @param key
-	 * @return
-	 */
-	public boolean resetCount(String key);
+	void resetAllCounts();
+
+	boolean resetCount(String componentName, String functionName);
 }

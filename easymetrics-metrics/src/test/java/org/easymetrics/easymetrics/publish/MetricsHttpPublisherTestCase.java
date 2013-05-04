@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import javax.annotation.Resource;
-
 import org.easymetrics.easymetrics.model.Aggregation;
 import org.easymetrics.easymetrics.model.Bucket;
 import org.easymetrics.easymetrics.model.CollectorUsage;
@@ -18,15 +16,10 @@ import org.easymetrics.easymetrics.model.ThreadUsage;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
-@ContextConfiguration(locations = { "/spring/applicationContext-publisher.xml" })
-public class MetricsHttpPublisherTestCase extends
-		AbstractJUnit4SpringContextTests {
+public class MetricsHttpPublisherTestCase {
 
-	@Resource
-	private MetricsHttpPublisher metricsHttpPublisher = null;
+	private MetricsHttpPublisher	metricsHttpPublisher	= new MetricsHttpPublisher();
 
 	@Before
 	public void setUp() throws Exception {
@@ -136,9 +129,9 @@ public class MetricsHttpPublisherTestCase extends
 		usage.addCollectorUsage(gcUsage2);
 
 		Record r = new Record();
-		r.setApplicationName("test");
+		r.setServiceGroup("test");
 		r.setId("test");
-		r.setFrameworkName("test");
+		r.setService("test");
 		r.setHost("test");
 		r.setPid("test");
 		r.setUser("test");

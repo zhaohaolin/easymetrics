@@ -4,15 +4,13 @@
 package org.easymetrics.easymetrics.measure;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.easymetrics.easymetrics.model.Measurement;
-
 
 /**
  * @author Administrator
@@ -27,10 +25,11 @@ public class JmxMeasurement implements JmxMeasurementMBean {
 	public List<String> queryMeasurementList() {
 		List<String> nameList = new ArrayList<String>();
 
-		Set<Entry<String, MBeanData>> entrySet = dataMap.entrySet();
-		for (Entry<String, MBeanData> entry : entrySet) {
-			StringBuilder builder = new StringBuilder(entry.getKey());
-			MBeanData mbeanData = entry.getValue();
+		List<MBeanData> dataList = new ArrayList<MBeanData>();
+		dataList.addAll(dataMap.values());
+		Collections.sort(dataList);
+		for (MBeanData mbeanData : dataList) {
+			StringBuilder builder = new StringBuilder(join(mbeanData.getComponentName(), mbeanData.getFunctionName()));
 			builder.append("[min=").append(mbeanData.getMinimum());
 			builder.append(",avg=").append(mbeanData.getAverage());
 			builder.append(",max=").append(mbeanData.getMaximum());
@@ -47,14 +46,14 @@ public class JmxMeasurement implements JmxMeasurementMBean {
 	}
 
 	@Override
-	public boolean resetCount(String key) {
+	public boolean resetCount(String componentName, String functionName) {
+		String key = join(componentName, functionName);
 		return dataMap.remove(key) == null ? false : true;
 	}
 
 	void addMeasurements(Measurement... measurements) {
 		for (Measurement measurement : measurements) {
-			String key = StringUtils
-					.join(new Object[] { measurement.getComponentName(), measurement.getFunctionName() }, ":");
+			String key = join(measurement.getComponentName(), measurement.getFunctionName());
 			MBeanData mbeanData = dataMap.get(key);
 			if (mbeanData == null) {
 				mbeanData = new MBeanData(measurement);
@@ -67,16 +66,24 @@ public class JmxMeasurement implements JmxMeasurementMBean {
 			}
 		}
 	}
+
+	private String join(String componentName, String functionName) {
+		return StringUtils.join(new Object[] { componentName, functionName }, ":");
+	}
 }
 
-class MBeanData {
-	private long		minimum;
-	private long		maximum;
+class MBeanData implements Comparable<MBeanData> {
+	private String	componentName;
+	private String	functionName;
+	private long	minimum;
+	private long	maximum;
 	private double	average;
-	private long		count;
-	private long		failCount;
+	private long	count;
+	private long	failCount;
 
 	public MBeanData(Measurement measurement) {
+		this.componentName = measurement.getComponentName();
+		this.functionName = measurement.getFunctionName();
 		if (measurement.getDuration() != null) {
 			maximum = measurement.getDuration();
 			minimum = measurement.getDuration();
@@ -103,6 +110,19 @@ class MBeanData {
 				failCount++;
 			}
 		}
+	}
+
+	@Override
+	public int compareTo(MBeanData other) {
+		return other.average > this.average ? 1 : -1;
+	}
+
+	public String getComponentName() {
+		return componentName;
+	}
+
+	public String getFunctionName() {
+		return functionName;
 	}
 
 	public long getMinimum() {

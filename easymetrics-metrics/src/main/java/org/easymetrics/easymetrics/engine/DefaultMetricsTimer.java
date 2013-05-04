@@ -14,7 +14,6 @@ import org.easymetrics.easymetrics.model.NameValue;
 import org.easymetrics.easymetrics.util.MetricsUtil;
 import org.easymetrics.easymetrics.util.SystemUtil;
 
-
 /**
  * @author Administrator
  * 
@@ -24,38 +23,38 @@ public class DefaultMetricsTimer implements MetricsTimer {
 	/**
 	 * unique id of metrics timer.
 	 */
-	private String											uniqueId				= null;
+	private String						uniqueId		= null;
 	/**
 	 * correlation to identify the group
 	 */
-	private CorrelationInfo							correlationInfo	= null;
+	private CorrelationInfo				correlationInfo	= null;
 
 	private final DefaultMetricsEngine	metricsEngine;
-	private final String								componentName;
-	private final String								functionName;
-	private long												startNano;
-	private Date												startTime;
-	private Integer											workUnits				= 1;
-	private Integer											createOrder			= 0;
-	private Boolean											failStatus;
-	private String											workUser				= SystemUtil.getUserName();
-	private List<NameValue>							metricsList			= new ArrayList<NameValue>();
+	private final String				componentName;
+	private final String				functionName;
+	private long						startNano;
+	private Date						startTime;
+	private Integer						workUnits		= 1;
+	private Integer						createOrder		= 0;
+	private Boolean						failStatus;
+	private String						workUser		= SystemUtil.getUserName();
+	private List<NameValue>				metricsList		= new ArrayList<NameValue>();
 
-	private MetricsTimer								parentTimer			= null;
-	private final List<MetricsTimer>		childTimerList	= new ArrayList<MetricsTimer>();
+	private MetricsTimer				parentTimer		= null;
+	private final List<MetricsTimer>	childTimerList	= new ArrayList<MetricsTimer>();
 
-	private Measurement									measurement			= null;
+	private Measurement					measurement		= null;
 
 	/**
-	 * Start metrics timer with componentName, functionName and push it to metrics engine.
+	 * Start metrics timer with componentName, functionName and push it to
+	 * metrics engine.
 	 * 
 	 * @param metricsEngine
 	 * @param componentName
 	 * @param functionName
 	 * @param correlationId
 	 */
-	public DefaultMetricsTimer(final DefaultMetricsEngine metricsEngine, final String componentName,
-			final String functionName, final String correlationId) {
+	public DefaultMetricsTimer(final DefaultMetricsEngine metricsEngine, final String componentName, final String functionName, final String correlationId) {
 		this.metricsEngine = metricsEngine;
 		this.componentName = MetricsUtil.truncate(componentName, 64);
 		this.functionName = MetricsUtil.truncate(functionName, 64, "function");
@@ -113,7 +112,7 @@ public class DefaultMetricsTimer implements MetricsTimer {
 				if (failStatus != null && failStatus) {
 					measurement.setFailStatus(failStatus);
 				}
-				//TODO work units
+				// TODO work units
 				measurement.setWorkUnits(workUnits);
 				measurement.setTimestamp(startTime);
 				measurement.setDuration(duration);

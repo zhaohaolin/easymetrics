@@ -2,13 +2,12 @@ package org.easymetrics.easymetrics.cglib;
 
 import java.lang.reflect.Method;
 
-import org.easymetrics.easymetrics.Measurable;
-import org.easymetrics.easymetrics.ProxyMetrics;
+import org.easymetrics.easymetrics.model.Measurable;
+import org.easymetrics.easymetrics.model.annotation.ProxyMetrics;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
-
-public class MetricsProxyPostProcessor implements BeanPostProcessor {
+public class MetricsProxyProcessor implements BeanPostProcessor {
 
 	private ProxyInterceptor	proxyInterceptor	= new MetricsProxyInterceptor();
 
@@ -18,10 +17,10 @@ public class MetricsProxyPostProcessor implements BeanPostProcessor {
 			return proxyInterceptor.proxyObject(bean);
 		}
 
-/*		Class<? extends Object> clazz = bean.getClass();
-		if (proxyMetrics(clazz)) {
+		Class<? extends Object> clazz = bean.getClass();
+		if (isMetricsProxied(clazz)) {
 			return proxyInterceptor.proxyObject(clazz);
-		}*/
+		}
 
 		return bean;
 	}
@@ -31,7 +30,7 @@ public class MetricsProxyPostProcessor implements BeanPostProcessor {
 		return bean;
 	}
 
-	protected boolean isProxied(Class<?> clazz) {
+	protected boolean isMetricsProxied(Class<?> clazz) {
 		Class<?> itr = clazz;
 		while (!itr.equals(Object.class)) {
 			for (Method m : itr.getDeclaredMethods()) {

@@ -23,23 +23,20 @@ import org.easymetrics.easymetrics.util.MetricsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * @author Administrator
  * 
  */
 public class DefaultRuntimeWorker extends Thread {
-	private static final Logger		logger				= LoggerFactory.getLogger(DefaultRuntimeWorker.class);
+	private static final Logger		LOGGER					= LoggerFactory.getLogger(DefaultRuntimeWorker.class);
 
-	private boolean								detailGc			= false;
-	private boolean								detailThread	= false;
-	private boolean								detailHeap		= false;
-	private long									checkInterval	= 60000;
-	private long									startNano			= System.nanoTime();
-
-	private MetricsPublishWorker	metricsPublishWorker;
-
-	private AtomicBoolean					terminating		= new AtomicBoolean(false);
+	private boolean					detailGc				= false;
+	private boolean					detailThread			= false;
+	private boolean					detailHeap				= false;
+	private long					checkInterval			= 60000;
+	private long					startNano				= System.nanoTime();
+	private MetricsPublishWorker	metricsPublishWorker	= null;
+	private AtomicBoolean			terminating				= new AtomicBoolean(false);
 
 	@Override
 	public final void run() {
@@ -48,11 +45,15 @@ public class DefaultRuntimeWorker extends Thread {
 			try {
 				Thread.sleep(checkInterval);
 			} catch (InterruptedException e) {
-				logger.warn("Failed to check runtime metrics with error " + e.getMessage(), e);
+				LOGGER.warn("Failed to check runtime metrics with error " + e.getMessage(), e);
 			}
 		}
-		
-		logger.info("Background runtime worker is terminated");
+
+		LOGGER.info("Background runtime worker is terminated");
+	}
+	
+	public void destroy() {
+		setTerminating();
 	}
 
 	void checkRuntimeMetrics() {
@@ -63,9 +64,10 @@ public class DefaultRuntimeWorker extends Thread {
 			getGcUsage(usage);
 			usage.setUsageId(MetricsUtil.createGuid());
 			usage.setCheckTime(new Date());
+			
 			metricsPublishWorker.enqueuePublishable(usage);
 		} catch (Exception e) {
-			logger.warn("Failed to collect runtime ata with error " + e.getMessage(), e);
+			LOGGER.warn("Failed to collect runtime ata with error " + e.getMessage(), e);
 		}
 
 	}
@@ -74,8 +76,7 @@ public class DefaultRuntimeWorker extends Thread {
 		if (detailGc) {
 			List<GarbageCollectorMXBean> collectorList = ManagementFactory.getGarbageCollectorMXBeans();
 			for (GarbageCollectorMXBean collector : collectorList) {
-				usage.getCollectorList().add(
-						new CollectorUsage(collector.getName(), collector.getCollectionCount(), collector.getCollectionTime()));
+				usage.getCollectorList().add(new CollectorUsage(collector.getName(), collector.getCollectionCount(), collector.getCollectionTime()));
 			}
 		}
 	}
@@ -121,8 +122,8 @@ public class DefaultRuntimeWorker extends Thread {
 				ThreadInfo info = threadMBean.getThreadInfo(threads[i]);
 				if (info != null) {
 					usage.getThreadList().add(
-							new ThreadUsage(info.getThreadName(), info.getThreadState().toString(), threadMBean
-									.getThreadCpuTime(threads[i]), threadMBean.getThreadUserTime(threads[i])));
+							new ThreadUsage(info.getThreadName(), info.getThreadState().toString(), threadMBean.getThreadCpuTime(threads[i]), threadMBean
+									.getThreadUserTime(threads[i])));
 				}
 			}
 		}

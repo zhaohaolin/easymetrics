@@ -114,7 +114,7 @@ public class JmxMeasurementTestCase {
 
 		jmxMeasurement.addMeasurements(mea2);
 
-		jmxMeasurement.resetCount("test:test");
+		jmxMeasurement.resetCount("test", "test");
 
 		List<String> measurments = jmxMeasurement.queryMeasurementList();
 

@@ -5,37 +5,24 @@ package org.easymetrics.easymetrics.model;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-
 
 /**
  * @author Administrator
  * 
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "CollectorUsage")
-public class CollectorUsage  implements Serializable{
+public class CollectorUsage implements Serializable {
 
 	private static final long	serialVersionUID	= 1L;
-	
-	@XmlTransient
-	private String	usageId;
 
-	@XmlAttribute(name = "name", required = true)
-	private String	name;
+	private transient String	usageId;
 
-	@XmlAttribute(name = "count", required = true)
-	private long		count;
+	private String				name;
 
-	@XmlAttribute(name = "time", required = true)
-	private long		time;
+	private long				count;
+
+	private long				time;
 
 	public CollectorUsage() {
 

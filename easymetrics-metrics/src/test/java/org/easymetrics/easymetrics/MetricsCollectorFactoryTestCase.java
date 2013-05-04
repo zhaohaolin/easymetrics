@@ -6,7 +6,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-
 public class MetricsCollectorFactoryTestCase {
 
 	@Before
@@ -25,12 +24,6 @@ public class MetricsCollectorFactoryTestCase {
 		MetricsProxyHandler.getInstance().stopMetricsTimer(metricsTimer, null, null);
 
 		Thread.sleep(1000);
-	}
-
-	public static void main(String[] args) {
-		int i = 0;
-		int j = i++;
-		System.out.println(j);
 	}
 
 }

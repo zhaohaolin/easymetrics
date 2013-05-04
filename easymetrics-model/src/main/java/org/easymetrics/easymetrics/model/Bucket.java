@@ -5,11 +5,6 @@ package org.easymetrics.easymetrics.model;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
@@ -17,19 +12,14 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * @author Administrator
  * 
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Bucket")
 public class Bucket  implements Serializable{
 
 	private static final long	serialVersionUID	= 1L;
 	
-	@XmlAttribute(name = "start", required = true)
 	private long	startRange;
 
-	@XmlAttribute(name = "count", required = true)
 	private long	count;
 
-	@XmlAttribute(name = "unit_count", required = true)
 	private long	unitCount;
 
 	public long getStartRange() {

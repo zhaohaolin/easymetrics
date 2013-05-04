@@ -9,8 +9,8 @@ import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
 import org.easymetrics.easymetrics.MetricsProxyHandler;
-import org.easymetrics.easymetrics.ProxyMetrics;
 import org.easymetrics.easymetrics.engine.MetricsTimer;
+import org.easymetrics.easymetrics.model.annotation.ProxyMetrics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

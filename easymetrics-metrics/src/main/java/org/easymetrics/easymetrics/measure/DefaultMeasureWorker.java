@@ -20,22 +20,21 @@ import org.easymetrics.easymetrics.publish.MetricsPublishWorker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * @author Administrator
  * 
  */
 public class DefaultMeasureWorker extends Thread {
-	private static final Logger								logger						= LoggerFactory.getLogger(DefaultMeasureWorker.class);
+	private static final Logger					LOGGER				= LoggerFactory.getLogger(DefaultMeasureWorker.class);
 
-	private long															checkInterval			= 2000;
+	private long								checkInterval		= 2000;
 	private LinkedBlockingQueue<MetricsTimer>	metricsTimerQueue	= new LinkedBlockingQueue<MetricsTimer>(1000);
-	private String														mbeanObjectName		= "Application:type=Metrics,name=Measurement";
-	private JmxMeasurement										measurementMBean;
-	private MetricsAggregateWorker						metricsAggregateWorker;
-	private MetricsPublishWorker							metricsPublishWorker;
-	private boolean														publishAll				= false;
-	private AtomicBoolean											terminating				= new AtomicBoolean(false);
+	private String								mbeanObjectName		= "org.easymetrics:type=Metrics,name=Measurement";
+	private JmxMeasurement						measurementMBean;
+	private MetricsAggregateWorker				metricsAggregateWorker;
+	private MetricsPublishWorker				metricsPublishWorker;
+	private boolean								publishAll			= false;
+	private AtomicBoolean						terminating			= new AtomicBoolean(false);
 
 	@Override
 	public void run() {
@@ -50,17 +49,21 @@ public class DefaultMeasureWorker extends Thread {
 					processMetricsTimer(metricsTimer);
 				}
 			} catch (Exception e) {
-				logger.warn("Failed to process measurement data", e);
+				LOGGER.warn("Failed to process measurement data", e);
 			}
 		}
 
-		logger.info("Background measurement worker is terminated");
+		LOGGER.info("Background measurement worker is terminated");
+	}
+
+	public void destroy() {
+		setTerminating();
 	}
 
 	public void enqueueMetricsTimer(MetricsTimer timer) {
 		if (!metricsTimerQueue.offer(timer)) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("Current queue limit " + metricsTimerQueue.size() + " is reached");
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Current queue limit " + metricsTimerQueue.size() + " is reached");
 			}
 		}
 	}
@@ -88,7 +91,7 @@ public class DefaultMeasureWorker extends Thread {
 					metricsPublishWorker.enqueuePublishable(measurements);
 				}
 			} else {
-				logger.debug(metricsTimers.size() + " timers dropped from further processing");
+				LOGGER.debug(metricsTimers.size() + " timers dropped from further processing");
 			}
 
 		}
@@ -101,7 +104,7 @@ public class DefaultMeasureWorker extends Thread {
 				// it will wait till an item available
 				return metricsTimerQueue.poll(checkInterval, TimeUnit.MILLISECONDS);
 			} catch (InterruptedException ie) {
-				logger.warn("Poll operation on queue interrupted", ie);
+				LOGGER.warn("Poll operation on queue interrupted", ie);
 			}
 		}
 	}
@@ -116,12 +119,12 @@ public class DefaultMeasureWorker extends Thread {
 			measurementMBean = new JmxMeasurement();
 			mbeanServer.registerMBean(measurementMBean, measurementName);
 
-			if (logger.isInfoEnabled()) {
-				logger.info("Registering with JMX server as MBean [" + measurementName + "]");
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info("Registering with JMX server as MBean [" + measurementName + "]");
 			}
 		} catch (Exception e) {
 			String message = "Unable to register MBeans with error " + e.getMessage();
-			logger.error(message, e);
+			LOGGER.error(message, e);
 		}
 	}
 

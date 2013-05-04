@@ -33,42 +33,26 @@
 
 	<bean id="metricsEngine" class="org.easymetrics.easymetrics.engine.DefaultMetricsEngine">
 		<property name="metricsMeasureWorker" ref="metricsMeasureWorker" />
-		<property name="metricsRuntimeWorker" ref="metricsRuntimeWorker" />
 		<property name="collectMetrics" value="true" />
 	</bean>
 
-	<bean id="metricsMeasureWorker" class="org.easymetrics.easymetrics.measure.DefaultMeasureWorker">
+	<bean id="metricsMeasureWorker"
+		class="org.easymetrics.easymetrics.measure.DefaultMeasureWorker">
 		<property name="metricsAggregateWorker" ref="metricsAggregateWorker" />
 		<property name="metricsPublishWorker" ref="metricsPublishWorker" />
 	</bean>
 
 	<bean id="metricsAggregateWorker"
 		class="org.easymetrics.easymetrics.aggregate.DefaultAggregateWorker">
-		<property name="aggregationRanges">
-			<list>
-				<value>0</value>
-				<value>2</value>
-				<value>5</value>
-				<value>10</value>
-				<value>20</value>
-				<value>50</value>
-				<value>100</value>
-				<value>200</value>
-				<value>500</value>
-				<value>1000</value>
-				<value>2000</value>
-				<value>5000</value>
-				<value>10000</value>
-				<value>20000</value>
-				<value>50000</value>
-			</list>
-		</property>
+		<property name="aggregationRanges"
+			value="0,2,5,10,20,50,100,200,500,1000,2000,5000,10000,20000,50000" />
 		<property name="aggregationInterval" value="1800000" />
 		<property name="aggregationFilter" value="true" />
 		<property name="metricsPublishWorker" ref="metricsPublishWorker" />
 	</bean>
 
-	<bean id="metricsRuntimeWorker" class="org.easymetrics.easymetrics.runtime.DefaultRuntimeWorker">
+	<bean id="metricsRuntimeWorker"
+		class="org.easymetrics.easymetrics.runtime.DefaultRuntimeWorker">
 		<property name="detailGc" value="true" />
 		<property name="detailThread" value="true" />
 		<property name="detailHeap" value="true" />
@@ -76,10 +60,12 @@
 		<property name="metricsPublishWorker" ref="metricsPublishWorker" />
 	</bean>
 
-	<bean id="metricsPublishWorker" class="org.easymetrics.easymetrics.publish.DefaultPublishWorker">
+	<bean id="metricsPublishWorker"
+		class="org.easymetrics.easymetrics.publish.DefaultPublishWorker">
 		<property name="metricsPublisherList">
 			<list>
 				<ref bean="metricsDaoPublisher" />
+				<ref bean="metricsHttpPublisher" />
 			</list>
 		</property>
 	</bean>
@@ -88,13 +74,18 @@
 		<property name="metricsDao" ref="metricsDao" />
 	</bean>
 
-	<bean id="metricsDao" class="org.easymetrics.easymetrics.publish.dao.DefaultMetricsDao">
+	<bean id="metricsHttpPublisher"
+		class="org.easymetrics.easymetrics.publish.MetricsHttpPublisher">
+	</bean>
+
+	<bean id="metricsDao"
+		class="org.easymetrics.easymetrics.publish.dao.DefaultMetricsDao">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
-	
-	<bean id="metricsProxyPostProcessor" class="org.easymetrics.easymetrics.cglib.MetricsProxyPostProcessor" />
-	
+
+	<bean id="metricsProxyProcessor" class="org.easymetrics.easymetrics.cglib.MetricsProxyProcessor" />
+
 	<bean id="metricsHelloWorld" class="org.easymetrics.easymetrics.cglib.MetricsHelloWorld" />
-	
+
 	<bean id="measurableHelloWorld" class="org.easymetrics.easymetrics.cglib.MeasurableHelloWorld" />
 </beans>

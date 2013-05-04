@@ -20,37 +20,36 @@ import org.easymetrics.easymetrics.util.SystemUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * @author Administrator
  * 
  */
 public class DefaultPublishWorker extends Thread implements MetricsPublishWorker {
 
-	private static final Logger								logger							= LoggerFactory.getLogger(DefaultPublishWorker.class);
+	private static final Logger					LOGGER					= LoggerFactory.getLogger(DefaultPublishWorker.class);
 
-	private String														domain							= "";
-	private String														applicationName			= "";
-	private String														frameworkName				= "";
-	private String														version							= "";
-	private String														host								= SystemUtil.getHostName();
-	private String														user								= SystemUtil.getUserName();
-	private String														pid									= SystemUtil.getPid();
-	private int																triggerSize					= 100;
-	private int																publishSize					= 500;
-	private int																timeInterval				= 5000;
+	private String								domain					= "";
+	private String								serviceGroup			= "";
+	private String								service					= "";
+	private String								version					= "";
+	private String								host					= SystemUtil.getHostName();
+	private String								user					= SystemUtil.getUserName();
+	private String								pid						= SystemUtil.getPid();
+	private int									triggerSize				= 100;
+	private int									publishSize				= 500;
+	private int									timeInterval			= 5000;
 
-	private List<MetricsPublisher>						metricsPublisherList;
-	private LinkedBlockingQueue<Publishable>	publishQueue				= new LinkedBlockingQueue<Publishable>(10000);
-	private final static Object								publishQueueMonitor	= new Object();
+	private List<MetricsPublisher>				metricsPublisherList	= new ArrayList<MetricsPublisher>();
+	private LinkedBlockingQueue<Publishable>	publishQueue			= new LinkedBlockingQueue<Publishable>(10000);
+	private final static Object					publishQueueMonitor		= new Object();
 
-	private AtomicBoolean											terminating					= new AtomicBoolean(false);
+	private AtomicBoolean						terminating				= new AtomicBoolean(false);
 
 	@Override
 	public void enqueuePublishable(Publishable publishable) {
 		if (!publishQueue.offer(publishable)) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("Drop 1 item with publish queue at its capacity " + publishQueue.size());
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Drop 1 item with publish queue at its capacity " + publishQueue.size());
 			}
 		}
 
@@ -85,8 +84,8 @@ public class DefaultPublishWorker extends Thread implements MetricsPublishWorker
 			}
 		}
 
-		if (dropCount > 0 && logger.isDebugEnabled()) {
-			logger.debug("Drop " + dropCount + " item(s) with publish queue at its capacity " + publishQueue.size());
+		if (dropCount > 0 && LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Drop " + dropCount + " item(s) with publish queue at its capacity " + publishQueue.size());
 		}
 
 	}
@@ -98,11 +97,11 @@ public class DefaultPublishWorker extends Thread implements MetricsPublishWorker
 				publishMetrics();
 			} catch (RuntimeException e) {
 				// log a warning message
-				logger.warn("Found error during publishing " + e.getMessage(), e);
+				LOGGER.warn("Found error during publishing " + e.getMessage(), e);
 			}
 		}
 
-		logger.info("Background publish worker is terminated");
+		LOGGER.info("Background publish worker is terminated");
 	}
 
 	public void destroy() {
@@ -115,7 +114,7 @@ public class DefaultPublishWorker extends Thread implements MetricsPublishWorker
 		if (!list.isEmpty()) {
 			StopTimer timer = new StopTimer();
 
-			Record record = new Record(MetricsUtil.createGuid(), domain, host, applicationName, frameworkName, version, user, pid);
+			Record record = new Record(MetricsUtil.createGuid(), domain, host, serviceGroup, service, version, user, pid);
 
 			for (Publishable publishable : list) {
 				if (publishable instanceof Measurement) {
@@ -134,9 +133,8 @@ public class DefaultPublishWorker extends Thread implements MetricsPublishWorker
 				publisher.publish(record);
 			}
 
-			if (logger.isDebugEnabled()) {
-				logger.debug(metricsPublisherList.size() + " publishers process " + list.size() + " publishables in "
-						+ timer.check() + " ms.");
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(metricsPublisherList.size() + " publishers process " + list.size() + " publishables in " + timer.check() + " ms.");
 			}
 		}
 	}
@@ -174,12 +172,12 @@ public class DefaultPublishWorker extends Thread implements MetricsPublishWorker
 		this.host = MetricsUtil.truncate(host, 32);
 	}
 
-	public void setApplicationName(String applicationName) {
-		this.applicationName = MetricsUtil.truncate(applicationName, 32);
+	public void setServiceGroup(String serviceGroup) {
+		this.serviceGroup = MetricsUtil.truncate(serviceGroup, 32);
 	}
 
-	public void setFrameworkName(String frameworkName) {
-		this.frameworkName = MetricsUtil.truncate(frameworkName, 32);
+	public void setService(String service) {
+		this.service = MetricsUtil.truncate(service, 32);
 	}
 
 	public void setVersion(String version) {

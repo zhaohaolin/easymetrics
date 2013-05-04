@@ -11,15 +11,15 @@ import org.slf4j.LoggerFactory;
 
 public class SystemUtil {
 
-	private static final Logger		logger									= LoggerFactory.getLogger(SystemUtil.class);
+	private static final Logger		logger					= LoggerFactory.getLogger(SystemUtil.class);
 
 	private static final String		DEFAULT_LOCAL_IPADDRESS	= "127.0.0.1";
 	private static final String		DEFAULT_LOCAL_HOSTNAME	= "localhost";
-	private static final String		DEFAULT_PID							= "0";
-	private static final String		DEFAULT_USER_NAME				= "user";
+	private static final String		DEFAULT_PID				= "0";
+	private static final String		DEFAULT_USER_NAME		= "user";
 
-	private static String					pid;
-	private static ReentrantLock	pidLock									= new ReentrantLock();
+	private static String			pid;
+	private static ReentrantLock	pidLock					= new ReentrantLock();
 
 	public static String getPid() {
 		if (pid == null) {
@@ -47,7 +47,7 @@ public class SystemUtil {
 		return pid;
 	}
 
-	private static String					hostName;
+	private static String			hostName;
 	private static ReentrantLock	hostNameLock	= new ReentrantLock();
 
 	public static String getHostName() {
@@ -70,7 +70,7 @@ public class SystemUtil {
 		return hostName;
 	}
 
-	private static String					userName;
+	private static String			userName;
 	private static ReentrantLock	userNameLock	= new ReentrantLock();
 
 	public static String getUserName() {
@@ -88,7 +88,7 @@ public class SystemUtil {
 		return userName;
 	}
 
-	private static String					ipAddress;
+	private static String			ipAddress;
 	private static ReentrantLock	ipAddressLock	= new ReentrantLock();
 
 	public static String getIpAddress() {

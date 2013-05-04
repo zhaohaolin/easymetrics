@@ -3,12 +3,7 @@
  */
 package org.easymetrics.easymetrics.publish;
 
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -29,44 +24,30 @@ import org.easymetrics.easymetrics.model.Record;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alibaba.fastjson.JSON;
+
 public class MetricsHttpPublisher implements MetricsPublisher {
 
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(MetricsHttpPublisher.class);
+	private static final Logger	LOGGER				= LoggerFactory.getLogger(MetricsHttpPublisher.class);
 
-	private static final String PUBLISH_URL_LOG = "log";
+	private static final String	PUBLISH_URL_LOG		= "log";
 
-	private HttpAsyncClient httpClient;
-	private String publishUrl;
-	private int socketTimeout = 5000;
-	private int connectionTimeout = 10000;
-	private String userAgent = "MetricsHttpPublisher";
-
-	private Marshaller xmlMarshaller;
-
-	public MetricsHttpPublisher() {
-		try {
-			JAXBContext context = JAXBContext.newInstance(Record.class);
-			xmlMarshaller = context.createMarshaller();
-		} catch (JAXBException e) {
-			String error = "Failed to initialize JAXB marshaller: "
-					+ e.getMessage();
-			throw new RuntimeException(error, e);
-		}
-	}
+	private HttpAsyncClient		httpClient			= null;
+	private String				publishUrl			= PUBLISH_URL_LOG;
+	private int					socketTimeout		= 5000;
+	private int					connectionTimeout	= 10000;
+	private String				userAgent			= "MetricsHttpPublisher";
 
 	public void start() {
 		try {
 			HttpParams params = new SyncBasicHttpParams();
 
 			HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-			HttpProtocolParams.setContentCharset(params,
-					HTTP.DEFAULT_CONTENT_CHARSET);
+			HttpProtocolParams.setContentCharset(params, HTTP.DEFAULT_CONTENT_CHARSET);
 			HttpConnectionParams.setTcpNoDelay(params, true);
 			HttpConnectionParams.setSocketBufferSize(params, 8192);
 			HttpConnectionParams.setSoTimeout(params, socketTimeout);
-			HttpConnectionParams
-					.setConnectionTimeout(params, connectionTimeout);
+			HttpConnectionParams.setConnectionTimeout(params, connectionTimeout);
 			HttpProtocolParams.setUserAgent(params, userAgent);
 
 			httpClient = new DefaultHttpAsyncClient(params);
@@ -90,24 +71,15 @@ public class MetricsHttpPublisher implements MetricsPublisher {
 		boolean succeed = false;
 
 		try {
+			String json = JSON.toJSONString(record);
 
-			if (xmlMarshaller != null) {
-				StringWriter writer = new StringWriter();
-				xmlMarshaller.marshal(record, writer);
-
-				if (PUBLISH_URL_LOG.equals(publishUrl)) {
-					LOGGER.info(writer.toString());
-					succeed = true;
-				} else {
-					postContent(writer.toString());
-					succeed = true;
-				}
+			if (PUBLISH_URL_LOG.equals(publishUrl)) {
+				LOGGER.info(json);
+				succeed = true;
 			} else {
-				LOGGER.warn("Invalid XML marshaller object!");
+				postContent(json);
+				succeed = true;
 			}
-		} catch (JAXBException e) {
-			// log a warning message, and skip this record
-			LOGGER.warn("Cannot convert record to XML", e);
 		} catch (UnsupportedEncodingException e) {
 			LOGGER.warn("Unsupported encoding", e);
 		}
@@ -121,8 +93,7 @@ public class MetricsHttpPublisher implements MetricsPublisher {
 	 * @throws UnsupportedEncodingException
 	 * 
 	 */
-	private void postContent(final String content)
-			throws UnsupportedEncodingException {
+	private void postContent(final String content) throws UnsupportedEncodingException {
 
 		HttpPost post = new HttpPost(publishUrl);
 
